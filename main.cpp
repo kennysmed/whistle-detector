@@ -5,6 +5,7 @@
 #include "spectrum.h"
 #include "oled.h"
 #include "whistle.h"
+#include "beep.h"
 
 // BERG Cloud Devshield comms defines
 #define MOSI_PIN p5
@@ -20,6 +21,9 @@ const uint8_t PROJECT_KEY[BC_KEY_SIZE_BYTES] =
 // Only one event to emit so far
 #define EVENT_WHISTLE_DETECTED 0x01
 
+// For the piezo buzzer feedback
+Beep buzzer(p21);
+
 // Our instance to communicate with BERG Cloud
 BERGCloudMbed BERGCloud;
 
@@ -34,7 +38,7 @@ int8_t spectrum[MAGNITUDE_BINS];
 int main()
 {
   stringstream display_text; // Used to format content for the OLED
-  whistle_count = 0;
+  uint32_t whistle_count = 0;
   led1 = 1;
   printf("--- start ---\r\n");
 
@@ -66,15 +70,16 @@ int main()
           /* Toggle LED */
           led4 = !led4;
           whistle_count++;
+
+          buzzer.beep(2000,0.05);
           
-          event.pack("COUNT"); // Just to indicate what we've captured
           event.pack(whistle_count);
-          event.pack("STATE"); // Just to indicate what we've captured
           event.pack(led4);
+          event.pack(whistle_freq);
           
           // Send the event object
           if (BERGCloud.sendEvent(EVENT_WHISTLE_DETECTED, event))  {
-            display_text << "Whistle count ";
+            display_text << "Whistle ";
             display_text << whistle_count;
             BERGCloud.display(display_text.str().c_str());
             // Reset our sstr
