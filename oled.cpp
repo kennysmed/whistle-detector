@@ -1,9 +1,18 @@
 #include "mbed.h"
 
-SPI spi(p11, p12, p13); // mosi, miso, sclk
-DigitalOut cs(p30);
+#ifdef TARGET_LPC1768
+SPI spi(p5, p6, p7); // mosi, miso, sclk
+DigitalOut cs(p8);
 DigitalOut rs(p9);
 DigitalOut rst(p10);
+#endif
+
+#ifdef TARGET_NUCLEO_F103RB
+SPI spi(D11, D12, D13); // mosi, miso, sclk
+DigitalOut cs(D8);
+DigitalOut rs(D9);
+DigitalOut rst(D10);
+#endif
 
 const uint8_t oledInitData[] = {
   0xae,  /* turn off oled panel */
@@ -149,4 +158,3 @@ void oledPlotSpectrum(int8_t *spectrum)
     t += 8;
   } 
 }   
-    
