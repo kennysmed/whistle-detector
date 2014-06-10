@@ -64,7 +64,7 @@ bool spectrumAcquire(int8_t *magnitude_dBfs)
 
   /* Plot samples */
   PLOT_Q15(samples_q15, ACQ_SIZE_SAMPLES, "/local/adc.dat");
- 
+
   /* Init decimator */
   if (arm_fir_decimate_init_q15(&decimatorInstance,
                                 FILTER_TAP_NUM,
